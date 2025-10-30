@@ -76,12 +76,20 @@ internal sealed class TestSuite : IDisposable
 
         try
         {
-            var assembly = Assembly.Load(AssemblyName.GetAssemblyName(assemblyPath));
-            return assembly.GetType(clazz)!;
+            Console.WriteLine($"[GdUnit4] Loading assembly from: {assemblyPath}");
+            Console.WriteLine($"[GdUnit4] Assembly exists: {File.Exists(assemblyPath)}");
+            var assembly = Assembly.LoadFrom(assemblyPath);
+            Console.WriteLine($"[GdUnit4] Assembly loaded: {assembly.FullName}");
+            var type = assembly.GetType(clazz);
+            Console.WriteLine($"[GdUnit4] Type found: {type != null}");
+            if (type == null)
+                throw new InvalidOperationException($"Type {clazz} not found in assembly {assembly.FullName}");
+            return type;
         }
         catch (Exception ex)
         {
             Console.Error.WriteLine($"Failed to resolve type '{clazz}': {ex.Message}");
+            Console.Error.WriteLine($"Exception: {ex}");
             throw new InvalidOperationException($"Could not find type {clazz} on assembly {assemblyPath}");
         }
     }
