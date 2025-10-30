@@ -69,4 +69,13 @@ public sealed class TestEngineSettings
     ///     Set to a higher value for projects that require more compilation time.
     /// </remarks>
     public int CompileProcessTimeout { get; init; } = 120000;
+
+    /// <summary>
+    ///     Gets the path to the Godot project directory.
+    /// </summary>
+    /// <remarks>
+    ///     When null or empty, the current working directory is used.
+    ///     Set this to specify a different Godot project directory for test execution.
+    /// </remarks>
+    public string? GodotProjectDir { get; init; }
 }

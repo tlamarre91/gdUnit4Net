@@ -132,6 +132,24 @@ public class GdUnit4Settings : TestRunSettings
     public int CompileProcessTimeout { get; init; } = 120000;
 
     /// <summary>
+    ///     Gets or sets the path to the Godot project directory.
+    /// </summary>
+    /// <value>
+    ///     The absolute path to the directory containing the project.godot file.
+    ///     When null or empty, the current working directory is used.
+    /// </value>
+    /// <remarks>
+    ///     This setting is useful when tests are in a separate project from the main Godot project.
+    ///     The test adapter will generate test runner files and launch Godot in this directory.
+    /// </remarks>
+    /// <example>
+    ///     <code>
+    /// GodotProjectDir = "/path/to/godot/project"
+    /// </code>
+    /// </example>
+    public string? GodotProjectDir { get; set; }
+
+    /// <summary>
     ///     Converts the current settings instance to an XML element for inclusion in .runsettings files.
     /// </summary>
     /// <returns>

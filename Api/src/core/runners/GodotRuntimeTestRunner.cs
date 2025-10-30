@@ -104,10 +104,14 @@ internal sealed class GodotRuntimeTestRunner : BaseTestRunner
             if (!VerifyGodotCSharpSupport(godotBinary))
                 return;
 
-            if (!InstallTestRunnerClasses(Environment.CurrentDirectory))
+            var workingDirectory = string.IsNullOrEmpty(settings.GodotProjectDir)
+                ? Environment.CurrentDirectory
+                : settings.GodotProjectDir;
+
+            if (!InstallTestRunnerClasses(workingDirectory))
                 return;
 
-            if (!ReCompileGodotProject(Environment.CurrentDirectory, godotBinary))
+            if (!ReCompileGodotProject(workingDirectory, godotBinary))
                 return;
             Logger.LogInfo("======== Running GdUnit4 Godot Runtime Test Runner ========");
 
@@ -121,7 +125,7 @@ internal sealed class GodotRuntimeTestRunner : BaseTestRunner
                     UseShellExecute = false,
                     CreateNoWindow = true,
                     WindowStyle = ProcessWindowStyle.Hidden,
-                    WorkingDirectory = Environment.CurrentDirectory
+                    WorkingDirectory = workingDirectory
                 };
 
             if (DebuggerFramework.IsDebugProcess)
@@ -184,7 +188,9 @@ internal sealed class GodotRuntimeTestRunner : BaseTestRunner
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 WindowStyle = ProcessWindowStyle.Hidden,
-                WorkingDirectory = Environment.CurrentDirectory
+                WorkingDirectory = string.IsNullOrEmpty(settings.GodotProjectDir)
+                    ? Environment.CurrentDirectory
+                    : settings.GodotProjectDir
             };
 
             var hasCSharpOptions = false;
