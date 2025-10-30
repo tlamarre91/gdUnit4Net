@@ -100,6 +100,7 @@ public class GdUnit4TestExecutor : ITestExecutor2, IDisposable
 
         var runConfiguration = XmlRunSettingsUtilities.GetRunConfigurationNode(runContext.RunSettings?.SettingsXml);
         var settings = GdUnit4SettingsProvider.LoadSettings(runContext);
+        Log.LogInfo($"Settings loaded - GodotProjectDir: '{settings.GodotProjectDir ?? "(null)"}'");
         var engineSettings = new TestEngineSettings
         {
             CaptureStdOut = settings.CaptureStdOut,
