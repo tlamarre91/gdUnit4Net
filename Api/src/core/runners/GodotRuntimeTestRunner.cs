@@ -108,7 +108,7 @@ internal sealed class GodotRuntimeTestRunner : BaseTestRunner
                 ? Environment.CurrentDirectory
                 : settings.GodotProjectDir;
 
-            Logger.LogInfo($"GodotProjectDir setting: '{settings.GodotProjectDir ?? "(null)"}'");
+            Logger.LogInfo($"GodotProjectDir SILLY setting: '{settings.GodotProjectDir ?? "(null)"}'");
             Logger.LogInfo($"Using working directory: '{workingDirectory}'");
 
             if (!InstallTestRunnerClasses(workingDirectory))
