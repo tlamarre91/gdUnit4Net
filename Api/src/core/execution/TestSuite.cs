@@ -78,13 +78,42 @@ internal sealed class TestSuite : IDisposable
         {
             Console.WriteLine($"[GdUnit4] Loading assembly from: {assemblyPath}");
             Console.WriteLine($"[GdUnit4] Assembly exists: {File.Exists(assemblyPath)}");
-            var assembly = Assembly.LoadFrom(assemblyPath);
-            Console.WriteLine($"[GdUnit4] Assembly loaded: {assembly.FullName}");
-            var type = assembly.GetType(clazz);
-            Console.WriteLine($"[GdUnit4] Type found: {type != null}");
-            if (type == null)
-                throw new InvalidOperationException($"Type {clazz} not found in assembly {assembly.FullName}");
-            return type;
+
+            // Set up assembly resolution to find dependencies in the same directory as the test assembly
+            var assemblyDirectory = Path.GetDirectoryName(assemblyPath);
+            ResolveEventHandler? resolver = null;
+            resolver = (sender, args) =>
+            {
+                Console.WriteLine($"[GdUnit4] Resolving assembly: {args.Name}");
+                var assemblyName = new AssemblyName(args.Name);
+                var assemblyFileName = assemblyName.Name + ".dll";
+                var assemblyFilePath = Path.Combine(assemblyDirectory!, assemblyFileName);
+
+                Console.WriteLine($"[GdUnit4] Looking for dependency at: {assemblyFilePath}");
+                if (File.Exists(assemblyFilePath))
+                {
+                    Console.WriteLine($"[GdUnit4] Loading dependency from: {assemblyFilePath}");
+                    return Assembly.LoadFrom(assemblyFilePath);
+                }
+                Console.WriteLine($"[GdUnit4] Dependency not found at: {assemblyFilePath}");
+                return null;
+            };
+
+            AppDomain.CurrentDomain.AssemblyResolve += resolver;
+            try
+            {
+                var assembly = Assembly.LoadFrom(assemblyPath);
+                Console.WriteLine($"[GdUnit4] Assembly loaded: {assembly.FullName}");
+                var type = assembly.GetType(clazz);
+                Console.WriteLine($"[GdUnit4] Type found: {type != null}");
+                if (type == null)
+                    throw new InvalidOperationException($"Type {clazz} not found in assembly {assembly.FullName}");
+                return type;
+            }
+            finally
+            {
+                AppDomain.CurrentDomain.AssemblyResolve -= resolver;
+            }
         }
         catch (Exception ex)
         {
