@@ -81,8 +81,8 @@ internal sealed class TestSuite : IDisposable
 
             // Set up assembly resolution to find dependencies in the same directory as the test assembly
             var assemblyDirectory = Path.GetDirectoryName(assemblyPath);
-            ResolveEventHandler? resolver = null;
-            resolver = (sender, args) =>
+
+            Assembly? ResolveAssembly(object? sender, ResolveEventArgs args)
             {
                 Console.WriteLine($"[GdUnit4] Resolving assembly: {args.Name}");
                 var assemblyName = new AssemblyName(args.Name);
@@ -95,11 +95,12 @@ internal sealed class TestSuite : IDisposable
                     Console.WriteLine($"[GdUnit4] Loading dependency from: {assemblyFilePath}");
                     return Assembly.LoadFrom(assemblyFilePath);
                 }
+
                 Console.WriteLine($"[GdUnit4] Dependency not found at: {assemblyFilePath}");
                 return null;
-            };
+            }
 
-            AppDomain.CurrentDomain.AssemblyResolve += resolver;
+            AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
             try
             {
                 var assembly = Assembly.LoadFrom(assemblyPath);
@@ -112,7 +113,7 @@ internal sealed class TestSuite : IDisposable
             }
             finally
             {
-                AppDomain.CurrentDomain.AssemblyResolve -= resolver;
+                AppDomain.CurrentDomain.AssemblyResolve -= ResolveAssembly;
             }
         }
         catch (Exception ex)

@@ -120,7 +120,9 @@ internal class BaseTestRunner : ITestRunner
     {
         if (response.StatusCode != HttpStatusCode.InternalServerError)
             return;
-        Console.WriteLine($"[GdUnit4] SILLY Status code: {response.StatusCode}, Payload: {response.Payload}");
+
+        // TODO: use LogInfo
+        Console.WriteLine($"[GdUnit4] Status code: {response.StatusCode}, Payload: {response.Payload}");
         var exception = JsonConvert.DeserializeObject<Exception>(response.Payload);
         throw new InvalidOperationException($"The server returned status code {response.StatusCode}.", exception);
     }
